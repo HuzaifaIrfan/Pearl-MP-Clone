@@ -11,7 +11,7 @@ import socketio
 
 sio = socketio.Client()
 
-username="aplayer"
+username=input("Enter Your Name??\n")
 myid="0"
 
 players={}
@@ -96,7 +96,7 @@ def checkrow(rownum):
 def askrow():
     rownum=0
     while(not checkrow(rownum)):
-        rownum=asknum("Enter Row Number 1-3")
+        rownum=asknum("Enter Row Number 1-3\n")
     asknumbers(rownum)
 
 
@@ -135,7 +135,7 @@ def removeitems(rownum,itemnum):
 def asknumbers(rownum):
     itemnum=0
     while(not checkitems(rownum,itemnum)):
-          itemnum=asknum("Enter Number of pearls 1-3,4,5")
+          itemnum=asknum("Enter Number of pearls 1-3,4,5\n")
     removeitems(rownum,itemnum)
 
 
