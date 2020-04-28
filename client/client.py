@@ -4,7 +4,7 @@ from os import system
 
 def clearscreen():
     system("cls")
-    print("Pearl before Swine MultiPlayer Clone - Python Client")
+    print("Pearl before Swine MultiPlayer Clone - Python TUI Client")
 
 
 import socketio
@@ -47,18 +47,6 @@ def waiting():
 
 
 
-def drawscreen():
-    global gameplay
-    global players
-    print(players["1"]["name"]," : ",players["1"]["score"])
-    print(players["2"]["name"]," : ",players["2"]["score"])
-    for row in gameplay:
-        for item in row:
-            if item==1:
-                print("O",end="")
-            else:
-                print("-",end="")
-        print("")
 
 
 def asknum(whatval):
@@ -155,7 +143,22 @@ def sendgame(getgame):
         print("Your Turn ",players[myid]["name"])
     else:
         print("Opponent's Turn ")
-    drawscreen()
+    
+
+
+    print(players["1"]["name"]," : ",players["1"]["score"])
+    print(players["2"]["name"]," : ",players["2"]["score"])
+    for row in gameplay:
+        for item in row:
+            if item==1:
+                print("O",end="")
+            else:
+                print("-",end="")
+        print("")
+
+
+
+
     if players[myid]["turn"]==True:
         askrow()
     

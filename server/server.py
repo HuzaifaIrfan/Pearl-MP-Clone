@@ -43,6 +43,17 @@ def startgame():
     global players
     emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
 
+    print(players["1"]["name"]," : ",players["1"]["score"]," Turn : ",players["1"]["turn"])
+    print(players["2"]["name"]," : ",players["2"]["score"]," Turn : ",players["2"]["turn"])
+    for row in gameplay:
+        for item in row:
+            if item==1:
+                print("O",end="")
+            else:
+                print("-",end="")
+        print("")
+
+
 
 
 
@@ -97,6 +108,17 @@ def sendgameplay(gotgameplay):
     players["2"]["turn"]=not players["2"]["turn"]
 
     emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
+
+    print(players["1"]["name"]," : ",players["1"]["score"])
+    print(players["2"]["name"]," : ",players["2"]["score"])
+    for row in gameplay:
+        for item in row:
+            if item==1:
+                print("O",end="")
+            else:
+                print("-",end="")
+        print("")
+
 
 
 
