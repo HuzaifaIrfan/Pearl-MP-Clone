@@ -50,7 +50,8 @@ def waiting():
 def drawscreen():
     global gameplay
     global players
-    print(players["1"]["name"]," : ",players["1"]["score"],"                 ",players["2"]["name"]," : ",players["2"]["score"])
+    print(players["1"]["name"]," : ",players["1"]["score"])
+    print(players["2"]["name"]," : ",players["2"]["score"])
     for row in gameplay:
         for item in row:
             if item==1:
@@ -151,9 +152,9 @@ def sendgame(getgame):
     gameplay=getgame["gameplay"]
     # print(players)
     if players[myid]["turn"]==True:
-        print("Your Turn")
+        print("Your Turn ",players[myid]["name"])
     else:
-        print("Opponent's Turn")
+        print("Opponent's Turn ")
     drawscreen()
     if players[myid]["turn"]==True:
         askrow()
