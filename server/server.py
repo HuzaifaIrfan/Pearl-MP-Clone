@@ -1,35 +1,40 @@
 
 
-
-import eventlet
-import socketio
-
 port=5000
 
-print("Pearl Before Swine Multiplayer Clone Server Running on PORT :",port)
+print("Pearl Before Swine Multiplayer Clone Server")
+
+
+
+from flask import Flask, render_template, session, request,jsonify, send_from_directory, \
+copy_current_request_context
+from flask_socketio import SocketIO, emit, disconnect
+
+
+async_mode = None
+
+app = Flask(__name__, static_url_path='')
+import logging
+logss = logging.getLogger('werkzeug')
+logss.disabled = True
+
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app, async_mode=async_mode)
+
+
+@socketio.on('Connection')
+def Connection(username):
+    print(username,"connected")
 
 
 
 
 
-sio = socketio.Server()
-app = socketio.WSGIApp(sio, static_files={
-    '/': {'content_type': 'text/html', 'filename': 'index.html'}
-})
 
 
 
-@sio.event
-def connect(sid, environ):
-    print('connect ', sid)
 
-@sio.event
-def my_message(sid, data):
-    print('message ', data)
 
-@sio.event
-def disconnect(sid):
-    print('disconnect ', sid)
 
 
 
@@ -58,4 +63,5 @@ def disconnect(sid):
 
 
 if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', port)), app)
+    print("Server started on port "+f"{port}")
+    socketio.run(app,host='0.0.0.0', port=port, debug=False)
