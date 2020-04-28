@@ -3,7 +3,7 @@
 port=5000
 
 print("Pearl Before Swine Multiplayer Clone Server")
-
+import time
 
 
 from flask import Flask, render_template, session, request,jsonify, send_from_directory, \
@@ -28,7 +28,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 
 
-
+ids=["1","2"]
 
 players={"1":None,"2":None}
 
@@ -37,8 +37,11 @@ gameplay=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
 
 
 def startgame():
-    emit("sendplayers",players,broadcast=True)
-    emit("sendgame",gameplay,broadcast=True)
+    #emit("sendplayers",players,broadcast=True)
+    # time.sleep(1)
+    global gameplay
+    global players
+    emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
 
 
 
@@ -47,7 +50,7 @@ def startgame():
 @socketio.on('Connection')
 def Connection(username):
     global players
-
+    print(request.sid)
     if players["1"]==None:
         players["1"]={"name":username,"turn":True,"score":0}
         emit("waiting")
@@ -63,6 +66,42 @@ def Connection(username):
             startgame()
         else:
             print("No space Left")
+            emit("playersfull")
+
+
+
+
+
+@socketio.on('sendgameplay')
+def sendgameplay(gotgameplay):
+    global gameplay
+    global players
+    global ids
+    gameplay=gotgameplay
+
+    left=0
+    for row in gameplay:
+        for item in row:
+            if item==1:
+                left=left+1
+
+    if left<2:
+        for aid in ids:
+            if players[aid]["turn"]==True:
+                gameplay=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
+                players[aid]["score"]=players[aid]["score"]+1
+
+
+    
+    players["1"]["turn"]=not players["1"]["turn"]
+    players["2"]["turn"]=not players["2"]["turn"]
+
+    emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
+
+
+
+
+
 
 
 
