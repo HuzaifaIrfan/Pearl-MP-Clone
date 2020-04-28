@@ -2,15 +2,17 @@
 from os import system
 
 
-print("Pearl before Swine MultiPlayer Clone - Python Client")
-
 def clearscreen():
-    system("clear")
+    system("cls")
+    print("Pearl before Swine MultiPlayer Clone - Python Client")
 
 
 import socketio
 
 sio = socketio.Client()
+
+username="aplayer"
+myid="0"
 
 
 
@@ -20,9 +22,19 @@ def connect():
     print('connection established')
 
 @sio.event
-def my_message(data):
-    print('message received with ', data)
-    sio.emit('my response', {'response': 'my response'})
+def sendid(gotid):
+    global myid
+    myid=gotid
+
+@sio.event
+def waiting():
+    clearscreen()
+    print("Waiting for second Player")
+
+@sio.event
+def sendplayers():
+    clearscreen()
+    print("Starting the game")
 
 @sio.event
 def disconnect():
@@ -37,11 +49,13 @@ def disconnect():
 
 
 
-
+clearscreen()
 
 sio.connect('http://localhost:5000/')
 
-sio.emit('Connection', "huzaifa")
+
+
+sio.emit('Connection', username)
 
 sio.wait()
 

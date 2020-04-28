@@ -23,8 +23,6 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 
 
-player1=None
-player2=None
 
 
 
@@ -32,12 +30,15 @@ player2=None
 
 
 
+players={"1":None,"2":None}
+
+gameplay=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
 
 
 
-
-
-
+def startgame():
+    emit("sendplayers",players,broadcast=True)
+    emit("sendgame",gameplay,broadcast=True)
 
 
 
@@ -45,13 +46,29 @@ player2=None
 
 @socketio.on('Connection')
 def Connection(username):
-    print(username,"connected")
+    global players
+
+    if players["1"]==None:
+        players["1"]={"name":username,"turn":True,"score":0}
+        emit("waiting")
+        emit("sendid","1")
+        print("Waiting for 1 Player to Connect")
+        print(players)
+    else:
+        if players["2"]==None:
+            players["2"]={"name":username,"turn":False,"score":0}
+            print(players)
+            emit("sendid","2")
+            print("Starting Game")
+            startgame()
+        else:
+            print("No space Left")
 
 
 
-
-
-
+@socketio.on('disconnect')
+def disconnected():
+    print("user disconnected")
 
 
 
