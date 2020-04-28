@@ -22,6 +22,27 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 
 
+
+player1=None
+player2=None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @socketio.on('Connection')
 def Connection(username):
     print(username,"connected")
@@ -64,4 +85,5 @@ def Connection(username):
 
 if __name__ == '__main__':
     print("Server started on port "+f"{port}")
+    print("Waiting for 2 Players to Connect")
     socketio.run(app,host='0.0.0.0', port=port, debug=False)
