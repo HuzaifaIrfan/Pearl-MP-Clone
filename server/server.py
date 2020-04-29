@@ -30,35 +30,7 @@ users={}
 games={}
 
 
-
-# ids=["1","2"]
-
-# players={"1":None,"2":None}
-
 # gameplay=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
-
-
-
-# def startgame():
-#     #emit("sendplayers",players,broadcast=True)
-#     # time.sleep(1)
-#     global gameplay
-#     global players
-#     emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
-
-#     print(players["1"]["name"]," : ",players["1"]["score"]," Turn : ",players["1"]["turn"])
-#     print(players["2"]["name"]," : ",players["2"]["score"]," Turn : ",players["2"]["turn"])
-#     for row in gameplay:
-#         for item in row:
-#             if item==1:
-#                 print("O",end="")
-#             else:
-#                 print("-",end="")
-#         print("")
-
-
-
-
 
 
 @socketio.on('Connection')
@@ -67,36 +39,7 @@ def Connection(username):
     userobj={"username":username,"connected":True}
     users[request.sid]=userobj
     # print(users)
-
-
-    # if players["1"]==None:
-    #     players["1"]={"name":username,"turn":True,"score":0}
-    #     emit("waiting")
-    #     emit("sendid","1")
-    #     print("Waiting for 1 Player to Connect")
-    #     print(players)
-    # else:
-    #     if players["2"]==None:
-    #         players["2"]={"name":username,"turn":False,"score":0}
-    #         print(players)
-    #         emit("sendid","2")
-    #         print("Starting Game")
-    #         startgame()
-    #     else:
-    #         print("No space Left")
-    #         emit("playersfull")
-
-
-
-
-
-# @socketio.on('sendgameplay')
-# def sendgameplay(gotgameplay):
-
-
-
-
-
+    # emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
 
 
 
@@ -106,36 +49,6 @@ def disconnected():
     global users
     users[request.sid]["connected"]=False
     print(users[request.sid]["username"],"Disconnected")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
