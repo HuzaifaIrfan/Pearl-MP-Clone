@@ -163,5 +163,5 @@ def disconnected():
 
 if __name__ == '__main__':
     print("Server started on port "+f"{port}")
-    print("Waiting for 2 Players to Connect")
+    print("Waiting for Players to Connect")
     socketio.run(app,host='0.0.0.0', port=port, debug=False)

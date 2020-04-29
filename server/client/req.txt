@@ -1,0 +1,13 @@
+appdirs==1.4.3
+certifi==2020.4.5.1
+chardet==3.0.4
+distlib==0.3.0
+filelock==3.0.12
+idna==2.9
+python-engineio==3.12.1
+python-socketio==4.5.1
+requests==2.23.0
+six==1.14.0
+urllib3==1.25.9
+virtualenv==20.0.18
+websocket-client==0.57.0
