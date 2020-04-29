@@ -76,9 +76,10 @@ def asknum(msg,high):
 
 
 
-def drawgame(gamecontent):
+
+def drawgamecontent(gamecontent):
     clearscreen()
-    for row in gamecontent.values():
+    for row in gamecontent:
         for item in row:
             if item ==1:
                 print("O",end="")
@@ -86,6 +87,37 @@ def drawgame(gamecontent):
                 print("-",end="")
         print("")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def drawgame(displaycon):
+    drawgamecontent(displaycon["game"]["gameplay"])
+    global username
+    if displaycon["turn"]==True:
+        print(f"Your Turn {username}")
+    else:
+        print(f"{displaycon['opponent']}'s Turn")
 
 
 
@@ -119,10 +151,16 @@ def notfree(player1name):
 
 
 @sio.event
+def opponentleft(opponentname):
+    clearscreen()
+    exitter(f"{opponentname} left the game.")
+    menu()
+
+@sio.event
 def loadinggame(loader):
     clearscreen()
     print("Starting Game with",loader["opponent"])
-    drawgame(loader["game"]["gameplay"])
+    drawgame(loader)
 
 
 

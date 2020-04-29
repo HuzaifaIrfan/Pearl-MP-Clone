@@ -88,18 +88,16 @@ def joingame(gotgameid):
         users[games[gotgameid]["player1"]]["opponent"]=games[gotgameid]["player2"]
 
 
-        games[gotgameid]["game"]={"gameid":gotgameid,"player1":{"username":users[games[gotgameid]["player1"]]["username"],"score":0,"turn":True},"player2":{"username":users[games[gotgameid]["player2"]]["username"],"score":0,"turn":False},"gameplay":{"1":[1,1,1,1,1],"2":[1,1,1,1],"3":[1,1,1]}}
+        games[gotgameid]["game"]={"gameid":gotgameid,"player1":{"username":users[games[gotgameid]["player1"]]["username"],"score":0,"turn":False},"player2":{"username":users[games[gotgameid]["player2"]]["username"],"score":0,"turn":True},"gameplay":[[1,1,1,1,1],[1,1,1,1],[1,1,1]]}
 
 
-        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"]}  ,room=games[gotgameid]["player1"])
-        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"]}  ,room=games[gotgameid]["player2"])
+        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
+        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
 
 
 
 
-        time.sleep(1)
-        # emit("startgame",{},room=games[gotgameid]["player1"])
-        # emit("startgame",{},room=games[gotgameid]["player2"])
+    
 
     else:
         emit("notfree",games[gotgameid]["creator"])
@@ -114,8 +112,19 @@ def joingame(gotgameid):
 @socketio.on('disconnect')
 def disconnected():
     global users
+    global games
     users[request.sid]["connected"]=False
     print(users[request.sid]["username"],"Disconnected")
+
+    opponentid=users[request.sid]["opponent"]
+    gameid=users[request.sid]["gameid"]
+
+    if not(gameid == None):
+        games[gameid]["player2"]="noone"
+    if not(opponentid == None):
+        users[opponentid]["gameid"]=None
+        users[opponentid]["opponent"]=None
+        emit("opponentleft",users[request.sid]["username"],room=opponentid)
 
 
 if __name__ == '__main__':
