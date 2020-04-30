@@ -313,7 +313,7 @@ def looser():
 def showgames(freegames):
     clearscreen()
     print("Free Games")
-    print(freegames)
+    # print(freegames)
     if len(freegames)>0:
 
         for i in range(0,len(freegames)):

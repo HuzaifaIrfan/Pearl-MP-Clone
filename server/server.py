@@ -113,24 +113,25 @@ def playagain():
     
     senderid=request.sid
     opponentid=users[request.sid]["opponent"]
-    gotgameid=users[request.sid]["gameid"]
+    if not (users[request.sid]["gameid"]==None):
+        gotgameid=users[request.sid]["gameid"]
 
 
-    
-    if games[gotgameid]["player1"]==senderid:
-        games[gotgameid]["p1again"]=True
+        
+        if games[gotgameid]["player1"]==senderid:
+            games[gotgameid]["p1again"]=True
 
-    if games[gotgameid]["player2"]==senderid:
-        games[gotgameid]["p2again"]=True
+        if games[gotgameid]["player2"]==senderid:
+            games[gotgameid]["p2again"]=True
 
-    print(games[gotgameid])
-    if ((games[gotgameid]["p1again"]==True) and (games[gotgameid]["p2again"]==True)):
-        games[gotgameid]["p1again"]=None
-        games[gotgameid]["p2again"]=None
+        print(games[gotgameid])
+        if ((games[gotgameid]["p1again"]==True) and (games[gotgameid]["p2again"]==True)):
+            games[gotgameid]["p1again"]=None
+            games[gotgameid]["p2again"]=None
 
-        games[gotgameid]["game"]["gameplay"]=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
-        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
-        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
+            games[gotgameid]["game"]["gameplay"]=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
+            emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
+            emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
 
 
 
