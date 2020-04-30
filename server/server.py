@@ -42,7 +42,7 @@ def Connection(username):
     global users
     userobj={"userid":request.sid,"username":username,"connected":True,"opponent":None,"gameid":None}
     users[request.sid]=userobj
-    print(users)
+    # print(users)
     # emit("sendgame",{"players":players,"gameplay":gameplay},broadcast=True)
 
 
@@ -72,6 +72,186 @@ def fetchgames():
             freegames.append(game)
 
     emit("showgames",freegames)
+
+
+
+
+@socketio.on('noplayagain')
+def noplayagain():
+    global games
+    global users
+
+    senderid=request.sid
+    opponentid=users[request.sid]["opponent"]
+    gotgameid=users[request.sid]["gameid"]
+
+    users[opponentid]["gameid"]=None
+    users[opponentid]["opponent"]=None
+
+    users[senderid]["gameid"]=None
+    users[senderid]["opponent"]=None
+
+    emit("opponentleft",users[request.sid]["username"],room=opponentid)
+
+    emit("tomainmenu",room=senderid)
+
+    
+    if games[gotgameid]["player1"]==senderid:
+        games[gotgameid]["p1again"]=False
+
+    if games[gotgameid]["player2"]==senderid:
+        games[gotgameid]["p2again"]=False
+
+
+
+
+
+@socketio.on('playagain')
+def playagain():
+    global games
+    global users
+    
+    senderid=request.sid
+    opponentid=users[request.sid]["opponent"]
+    gotgameid=users[request.sid]["gameid"]
+
+
+    
+    if games[gotgameid]["player1"]==senderid:
+        games[gotgameid]["p1again"]=True
+
+    if games[gotgameid]["player2"]==senderid:
+        games[gotgameid]["p2again"]=True
+
+    print(games[gotgameid])
+    if ((games[gotgameid]["p1again"]==True) and (games[gotgameid]["p2again"]==True)):
+        games[gotgameid]["p1again"]=None
+        games[gotgameid]["p2again"]=None
+
+        games[gotgameid]["game"]["gameplay"]=[[1,1,1,1,1],[1,1,1,1],[1,1,1]]
+        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
+        emit("loadinggame",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
+
+
+
+
+
+def chkdelpearl(gotgameid,gameplay,row,n):
+    global games
+    leftinrow=0
+    for item in gameplay[row-1]:
+        if item==1:
+            leftinrow= leftinrow+1
+    
+    if leftinrow>=n:
+        tempgameplay=gameplay
+        removed=0
+        temprow=gameplay[row-1]
+        length=len(temprow)
+        for i in range(0,length):
+            if removed < n:
+                if temprow[i]==1:
+                    temprow[i]=0
+                    removed= removed+1
+
+        
+        tempgameplay[row-1]=temprow
+        games[gotgameid]["game"]["gameplay"]=tempgameplay
+
+        left=0
+        for arow in tempgameplay:
+            for item in arow:
+                if item==1:
+                    left=left+1
+        
+        if left<=1:
+            return 1
+
+
+    return 0
+
+
+
+
+
+
+
+@socketio.on('removepearls')
+def removepearls(obj):
+    global games
+    global users
+    senderid=request.sid
+    gotgameid=users[senderid]["gameid"]
+    
+    # print(obj)
+    gameplay=games[gotgameid]["game"]["gameplay"]
+
+
+
+
+
+    if games[gotgameid]["player1"]==senderid:
+        #sender is player1
+        if games[gotgameid]["game"]["player1"]["turn"]==True:
+            #its player1 turn
+            win=chkdelpearl(gotgameid,gameplay,obj["row"],obj["pearls"])
+
+            # change turns
+            games[gotgameid]["game"]["player1"]["turn"] = not games[gotgameid]["game"]["player1"]["turn"]
+            games[gotgameid]["game"]["player2"]["turn"] = not games[gotgameid]["game"]["player2"]["turn"]
+
+
+            if win==1:
+                games[gotgameid]["game"]["player1"]["score"]=games[gotgameid]["game"]["player1"]["score"]+1
+                emit("winner" ,room=games[gotgameid]["player1"])
+                emit("looser" ,room=games[gotgameid]["player2"])
+
+
+
+            else:
+
+                #emit next turn
+                emit("nextturn",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
+                emit("nextturn",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
+
+
+
+
+
+
+
+    if games[gotgameid]["player2"]==senderid:
+        #sender is player2
+        if games[gotgameid]["game"]["player2"]["turn"]==True:
+            #its player2 turn
+            win=chkdelpearl(gotgameid,gameplay,obj["row"],obj["pearls"])
+
+            # change turns
+            games[gotgameid]["game"]["player1"]["turn"] = not games[gotgameid]["game"]["player1"]["turn"]
+            games[gotgameid]["game"]["player2"]["turn"] = not games[gotgameid]["game"]["player2"]["turn"]
+
+            if win==1:
+                games[gotgameid]["game"]["player2"]["score"]=games[gotgameid]["game"]["player2"]["score"]+1
+                emit("winner" ,room=games[gotgameid]["player2"])
+                emit("looser" ,room=games[gotgameid]["player1"])
+
+
+
+
+            else:
+
+                #emit next turn
+                emit("nextturn",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player2"]["username"],"turn":games[gotgameid]["game"]["player1"]["turn"]}  ,room=games[gotgameid]["player1"])
+                emit("nextturn",{"game":games[gotgameid]["game"],"opponent":games[gotgameid]["game"]["player1"]["username"],"turn":games[gotgameid]["game"]["player2"]["turn"]}  ,room=games[gotgameid]["player2"])
+
+
+
+
+
+
+
+
+
 
 
 

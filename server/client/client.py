@@ -18,8 +18,8 @@ import socketio
 
 sio = socketio.Client()
 
-# username=input("Enter Your Name??\n")
-username="player"
+username=input("Enter Your Name??\n")
+# username="player"
 
 
             
@@ -55,10 +55,22 @@ def menu():
             exitter("Bye Bye")
         else:
             exitter("Please Choose from Above")
-            
 
 
-def asknum(msg,high):
+def asknum(msg):
+	anum=None
+	while(anum==None):
+		try:
+			anum=int(input(msg))
+		except:
+			print("Number required")
+			continue
+
+	return anum
+
+
+
+def asknumrange(msg,high):
 	anum=None
 	while(anum==None):
 		try:
@@ -71,14 +83,13 @@ def asknum(msg,high):
 			print(f"Write a Number (from 1-{high})")
 			anum=None
 
-
 	return anum
 
 
 
 
 def drawgamecontent(gamecontent):
-    clearscreen()
+
     for row in gamecontent:
         for item in row:
             if item ==1:
@@ -102,22 +113,110 @@ def drawgamecontent(gamecontent):
 
 
 
+def checkrow(gameplay,rownum):
+    if rownum<1 or rownum>3:
+        return False
+    nitems=0
+    rowitems=gameplay[rownum-1]
+    for item in rowitems:
+        if item==1:
+            nitems=nitems+1
+    if nitems==0:
+        print("No items in this row please select another")
+        return False
+    return True
+        
 
-
-
-
-
-
-
-
-
-def drawgame(displaycon):
-    drawgamecontent(displaycon["game"]["gameplay"])
-    global username
-    if displaycon["turn"]==True:
-        print(f"Your Turn {username}")
+def checkitems(gameplay,rownum,itemnum):
+    if itemnum==0:
+        return False
+    nitems=0
+    rowitems=gameplay[rownum-1]
+    for item in rowitems:
+        if item==1:
+            nitems=nitems+1
+    if itemnum<=nitems:
+        return True
     else:
-        print(f"{displaycon['opponent']}'s Turn")
+        print("Too Many")
+        return False
+
+
+
+
+
+def asknumbers(gameplay,rownum):
+    itemnum=0
+    while(not checkitems(gameplay,rownum,itemnum)):
+          itemnum=asknum("Enter Number of pearls 1-3,4,5\n")
+
+    # removeitems(gameplay,rownum,itemnum)
+    sio.emit('removepearls', {"row":rownum,"pearls":itemnum})
+
+
+
+
+
+def askrow(gameplay):
+    rownum=0
+    while(not checkrow(gameplay,rownum)):
+        rownum=asknum("Enter Row Number 1-3\n")
+    asknumbers(gameplay,rownum)
+
+
+
+
+
+
+
+# def removeitems(rownum,itemnum):
+#     global gameplay
+#     removed=0
+#     temprow=gameplay[rownum-1]
+#     length=len(temprow)
+#     for i in range(0,length):
+#         if removed < itemnum:
+#             if temprow[i]==1:
+#                 temprow[i]=0
+#                 removed= removed+1
+#     gameplay[rownum-1]=temprow
+#     #print(gameplay)
+#     input("")
+#     sio.emit('sendgameplay', gameplay)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def drawgame(gameobj):
+    gameplay=gameobj["game"]["gameplay"]
+
+    player1=gameobj["game"]["player1"]
+    player2=gameobj["game"]["player2"]
+
+    print(player1["username"],":",player1["score"])
+    print(player2["username"],":",player2["score"])
+
+
+    drawgamecontent(gameplay)
+    global username
+    if gameobj["turn"]==True:
+        print(f"Your Turn {username}")
+        askrow(gameplay)
+    else:
+        print(f"{gameobj['opponent']}'s Turn")
 
 
 
@@ -163,6 +262,45 @@ def loadinggame(loader):
     drawgame(loader)
 
 
+@sio.event
+def nextturn(gameobj):
+    clearscreen()
+    drawgame(gameobj)
+
+
+@sio.event
+def tomainmenu():
+    clearscreen()
+    menu()
+
+
+def playagain():
+    print("Do you want to play Again? Y/n ")
+    ans=input("")
+    if ans=="n"or ans=="N":
+        sio.emit('noplayagain')
+    else:
+        sio.emit('playagain')
+        print("Waiting for other Player to Respond!!")
+
+
+@sio.event
+def winner():
+    clearscreen()
+    print("You Win")
+
+    playagain()
+
+
+
+
+@sio.event
+def looser():
+    clearscreen()
+    print("You Lose")
+
+    playagain()
+
 
 # @sio.event
 # def startgame(game):
@@ -181,7 +319,7 @@ def showgames(freegames):
         for i in range(0,len(freegames)):
             print(i+1,":",freegames[i]["creator"])
         
-        gamenum=asknum("Enter Game ID",len(freegames))
+        gamenum=asknumrange("Enter Game ID",len(freegames))
 
         sio.emit('joingame', freegames[gamenum-1]["gameid"])
 
