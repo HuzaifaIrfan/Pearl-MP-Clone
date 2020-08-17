@@ -27,6 +27,8 @@ By Huzaifa Irfan
 
 - Create new Game from one client
 - Join the Game from other client
+- Enter row number and number of pearl to remove.
+- Person with remaining last pearl loses the game
 
 
 ### Contact
