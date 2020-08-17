@@ -3,7 +3,7 @@ from os import system
 import time
 
 def clearscreen():
-    system("cls")
+    system("clear")
     print("Pearl before Swine MultiPlayer Clone - Python TUI Client")
 
 def exitter(msg):

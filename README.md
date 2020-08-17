@@ -1,1 +1,35 @@
-# Pearl-MP-Clone
+# Pearl-MP-TUI-Clone
+## Project Template is Included.
+
+TUI Pearl from Python
+
+
+Developed on 19 Apr 2020
+
+
+By Huzaifa Irfan
+
+## GamePlay Screen Shot
+![Game Play](/img/gameplay.png)
+
+
+## Requirments 
+- Python
+
+## Install dependencies
+> pip install -r req.txt
+
+## Run the server
+> python server.py
+
+## Run the client
+> python client.py
+
+- Create new Game from one client
+- Join the Game from other client
+
+
+### Contact
+* Email : [huzaifairfan2001@gmail.com](mailto:huzaifairfan2001@gmail.com)
+* Website : [huzaifairfan.com](huzaifairfan.com)
+* Facebook : [huzaifairfan2001@facebook](https://www.facebook.com/huzaifairfan2001)
